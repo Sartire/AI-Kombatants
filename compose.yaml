@@ -1,0 +1,10 @@
+services:
+  python3.12:
+    build: .
+    platform: linux/amd64
+    ports:
+      - 8889:8889
+      - 6006:6006
+    volumes:
+      - ./code:/usr/src/code
+    command: jupyter lab --ip 0.0.0.0 --allow-root --port 8889
