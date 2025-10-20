@@ -4,8 +4,12 @@ FROM ubuntu:jammy
 
 ENV DEBIAN_FRONTEND=noninteractive
 
-# Install Python 3.12
+
 RUN apt-get update 
+#OpenGL
+RUN apt-get install -y libgl1-mesa-dev libglu1-mesa-dev freeglut3-dev
+
+# Install Python 3.12
 RUN apt-get install -y software-properties-common 
 RUN add-apt-repository ppa:deadsnakes/ppa 
 RUN apt-get update 

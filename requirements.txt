@@ -6,3 +6,5 @@ ipywidgets
 matplotlib
 stable-retro
 gymnasium
+pyglet
+pyopengl
