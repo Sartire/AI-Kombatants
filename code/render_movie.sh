@@ -1,0 +1,7 @@
+#!/bin/bash
+
+filename="$1"
+
+Xvfb :99 -screen 0 1024x768x24
+export DISPLAY=:99
+python3.12 -m retro.scripts.playback_movie "$filename"

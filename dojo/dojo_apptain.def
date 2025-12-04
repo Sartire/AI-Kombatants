@@ -1,0 +1,65 @@
+Bootstrap: docker
+From: ubuntu:jammy
+
+%environment
+    export DEBIAN_FRONTEND=noninteractive
+
+%files 
+    ./requirements.txt /requirements.txt
+    ./rom /usr/src/rom
+    /usr/share/zoneinfo/America/New_York /etc/localtime
+
+%post
+    echo "HELLO WORLD"
+    # basics
+    apt-get update  
+    apt-get install -y software-properties-common 
+    apt-get install -y git 
+    # virtual desktop
+    apt-get install -y xvfb 
+    apt-get install -y x11vnc 
+    apt-get install -y fluxbox 
+    # requirements for pyglet (OPENGL)
+    apt-get install -y libgl1-mesa-dev 
+    apt-get install -y libglu1-mesa-dev 
+    apt-get install -y freeglut3-dev 
+    # requirements for stable retro
+    apt-get install -y cmake 
+    apt-get install -y build-essential
+    apt-get install -y capnproto 
+    apt-get install -y libcapnp-dev
+    apt-get install -y libqt5opengl5-dev 
+    apt-get install -y qtbase5-dev 
+    apt-get install -y zlib1g-dev
+    rm -rf /var/lib/apt/lists/*
+    apt-get clean
+
+    #ffmpeg
+    add-apt-repository ppa:ubuntuhandbook1/ffmpeg8 
+    apt-get update 
+    apt-get install -y ffmpeg 
+    rm -rf /var/lib/apt/lists/* 
+    apt-get clean
+
+    #python 3.12
+    add-apt-repository ppa:deadsnakes/ppa 
+    apt-get update 
+    apt-get install -y python3.12 
+    apt-get install -y python3.12-venv 
+    apt-get install -y python3.12-dev 
+    python3.12 -m ensurepip --upgrade 
+    rm -rf /var/lib/apt/lists/* 
+    apt-get clean
+
+    update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.12 1
+    update-alternatives --install /usr/bin/python python /usr/bin/python3.12 1 
+    # install packages
+    python3.12 -m pip install -r requirements.txt
+
+    # build stable-retro
+    git clone https://github.com/Sartire/stable-retro.git stable-retro
+    python3.12 -m pip install -e stable-retro
+
+    python3.12 -m retro.import /usr/src/rom
+
+    python3.12 -m pip install "ray[rllib,tune]"
