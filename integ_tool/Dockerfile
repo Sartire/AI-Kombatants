@@ -50,7 +50,7 @@ RUN update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.12 1
     update-alternatives --install /usr/bin/python python /usr/bin/python3.12 1
 
 # install other packages
-COPY requirements.txt ./requirements.txt
+COPY --from=project ./requirements.txt ./requirements.txt
 
 RUN python3.12 -m pip install -r requirements.txt
 
@@ -64,7 +64,7 @@ RUN cmake . -DBUILD_UI=ON -UPYLIB_DIRECTORY -DPython3_EXECUTABLE=/usr/bin/python
 RUN make -j$(grep -c ^processor /proc/cpuinfo)
 
 # install MK2 ROM
-COPY ./rom /usr/src/rom
+COPY --from=project ./rom /usr/src/rom
 
 RUN python3.12 -m retro.import /usr/src/rom
 

@@ -23,12 +23,11 @@ python3 -m retro.scripts.playback_movie [the bk2 file]
 
 ### running the integration tool?
 
-Problem: the stable-retro source repo has to be available?
+Docker terminal into the container,
+docker compose run python_integ_tool bash
 
-I have it forked in into ../stable-retro
+Then:
+    cd /usr/src/code
+    bash launch_integ.sh
 
-docker compose run --rm python bash
-
-cd /stable-retro
-cmake . -DBUILD_UI=ON -UPYLIB_DIRECTORY
-make -j$(grep -c ^processor /proc/cpuinfo)
+Then in a VNC viewer connect to localhost:5900

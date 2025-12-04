@@ -1,20 +1,42 @@
 services:
-  python:
-    build: .
+  python_integ_tool:
+    image: python_integ_tool
+    build:
+      context: ./integ_tool
+      additional_contexts:
+        project: ./
+    
     platform: linux/amd64
     ports:
       - 8889:8889
       - 6006:6006
       - 5900:5900
     volumes:
-      - retro:/stable-retro
+      
 
       - ./code:/usr/src/code
       - ./data:/usr/src/data
-      #- ../stable-retro:/stable-retro
+      
     command: jupyter lab --ip 0.0.0.0 --allow-root --port 8889
     stdin_open: true
     tty: true
 
-volumes:
-  retro:
+  dojo:
+    image: dojo
+    build:
+      context: ./dojo
+      additional_contexts:
+        project: ./
+    platform: linux/amd64
+    ports:
+        - 8889:8889
+        - 6006:6006
+        - 5900:5900
+    volumes:
+        - ./code:/usr/src/code
+        - ./data:/usr/src/data
+        
+    command: jupyter lab --ip 0.0.0.0 --allow-root --port 8889
+    stdin_open: true
+    tty: true
+  
