@@ -48,7 +48,7 @@ config = (
             'conv_layers_spec': conv_layer_spec,
             
         }
-    )
+    ))
     .env_runners(num_env_runners = num_workers,
                  num_envs_per_runner = 1)
     .learners(num_learners = 1)
@@ -67,7 +67,7 @@ config = (
         evaluation_duration_unit="episodes",
         evaluation_duration=10)
     )
-)
+
 
 # ---------------
 # RUN TRAINING!?!?!
