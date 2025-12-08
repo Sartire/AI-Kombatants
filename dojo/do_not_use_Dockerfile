@@ -1,5 +1,7 @@
 # syntax=docker/dockerfile:1
 
+# this image is 14GB, so we pivoted to apptainer instead, which also let us use the UVA HPC. 
+
 FROM ubuntu:jammy
 
 ENV DEBIAN_FRONTEND=noninteractive

@@ -55,7 +55,7 @@ COPY --from=project ./requirements.txt ./requirements.txt
 RUN python3.12 -m pip install -r requirements.txt
 
 # build stable-retro
-RUN git clone https://github.com/farama-foundation/stable-retro.git stable-retro
+RUN git clone https://github.com/Sartire/stable-retro.git stable-retro
 RUN python3.12 -m pip install -e stable-retro
 
 # build integration tool
