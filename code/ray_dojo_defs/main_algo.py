@@ -37,7 +37,8 @@ config = (
                      'state': 'Level1.JaxVsBaraka',
                      'record_dir': False,
                      'n_skip_steps': 10,
-                     'skip_repeat': True
+                     'skip_repeat': True,
+                     'reset_delay': 100
                  })
     .rl_module(rl_module_spec=RLModuleSpec(
         module_class=Kombatant,
@@ -55,16 +56,16 @@ config = (
         train_batch_size_per_learner=1000,
         lr=0.0001,
         num_epochs=10)
-    .evaluation(
-        # Run one evaluation round every iteration.
-        evaluation_interval=1,
-
-        # Create 2 eval EnvRunners in the extra EnvRunnerGroup.
-        evaluation_num_env_runners=2,
-        # Run evaluation for exactly 10 episodes. Note that because you have
-        # 2 EnvRunners, each one runs through 5 episodes.
-        evaluation_duration_unit="episodes",
-        evaluation_duration=10)
+    #.evaluation(
+    #    # Run one evaluation round every iteration.
+    #    evaluation_interval=1,
+    #
+    #    # Create 2 eval EnvRunners in the extra EnvRunnerGroup.
+    #    evaluation_num_env_runners=2,
+    #    # Run evaluation for exactly 10 episodes. Note that because you have
+    #    # 2 EnvRunners, each one runs through 5 episodes.
+    #    evaluation_duration_unit="episodes",
+    #    evaluation_duration=10)
     )
 
 
