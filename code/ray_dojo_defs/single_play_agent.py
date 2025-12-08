@@ -6,6 +6,7 @@ import torch
 
 from ray.rllib.core.columns import Columns
 from ray.rllib.core.rl_module.torch import TorchRLModule
+from ray.rllib.models.torch.torch_action_dist import TorchMultiActionDistribution
 
 # Define your custom env class by subclassing `TorchRLModule`:
 class Kombatant(TorchRLModule):
@@ -15,14 +16,15 @@ class Kombatant(TorchRLModule):
         # self.action_space
         # self.inference_only
         # self.model_config  # <- a dict with custom settings
-        self.input_shape = self.observation_space.shape
+        self.input_shape = self.observation_space['image'].shape
         hidden_dim = self.model_config["hidden_dim"]
         output_dim = self.action_space.n
         
         self.conv_layers_spec = self.model_config['conv_layers_spec']
-        self.additional_input_size = self.model_config['additional_input_size']
+        # the batch dimension is dim 0
+        self.additional_input_size = self.observation_space['additional_data'].shape[-1]
         
-        # Define and assign your torch subcomponents.
+        # Define and assign torch subcomponents.
        
         conv_layers = []
         prev_dim = self.input_shape[-1] 
@@ -63,7 +65,7 @@ class Kombatant(TorchRLModule):
         
         data = batch[Columns.OBS]
         img = data['image']
-        additional = data['additional']
+        additional = data['additional_data']
 
         conv_res = self.conv_layers(img)
         conv_res = conv_res.view(conv_res.size(0), -1)
@@ -72,5 +74,5 @@ class Kombatant(TorchRLModule):
         action_logits = self.fc_final(x)
 
         # Return parameters for the default action distribution, which is
-        # `TorchCategorical` (due to our action space being `gym.spaces.Discrete`).
+        # `TorchMultiActionDistribution` (action space is `gym.spaces.MultiBinary`).
         return {Columns.ACTION_DIST_INPUTS: action_logits}
