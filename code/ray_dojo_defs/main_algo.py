@@ -24,7 +24,7 @@ conv_layer_spec = [
 num_workers = 10
 num_episodes = 4
 
-checkpoint_dir = '/usr/src/data/checkpoints'
+checkpoint_dir = '/kombat_artifacts/checkpoints'
 
 # ------------------------
 # ALGORITHM CONFIG
