@@ -30,7 +30,7 @@ MKII_obs_space = gym.spaces.Dict({
         #'enemy_health': gym.spaces.Box(low=0, high=120, shape=(1,), dtype=np.float),
         #'player_location': gym.spaces.Box(low=-np.inf, high=np.inf, shape=(2,), dtype=np.float),
         #'enemy_location': gym.spaces.Box(low=-np.inf, high=np.inf, shape=(2,), dtype=np.float),  
-        'additional_data': gym.spaces.Box(low=-np.inf, high=np.inf, shape=(6,), dtype=np.float)
+        'additional_data': gym.spaces.Box(low=-np.inf, high=np.inf, shape=(6,), dtype=np.float16)
     })
 
 
@@ -66,7 +66,8 @@ class MKII_Single_Env(gym.Env):
         # obs is the tuple output by env.step
         new_obs = {
             'image': obs[0], 
-            'additional_data': np.array([obs[4]['health'], obs[4]['enemy_health'], obs[4]['x_position'], obs[4]['y_position'], obs[4]['enemy_x_position'], obs[4]['enemy_y_position']]),   
+            'additional_data': np.array([obs[4]['health'], obs[4]['enemy_health'], obs[4]['x_position'], obs[4]['y_position'], 
+                                         obs[4]['enemy_x_position'], obs[4]['enemy_y_position']], dtype=np.float16),   
             #'health': obs[4]['health'],
             #'enemy_health': obs[4]['enemy_health'],
             #'player_location': np.array([obs[4]['x_position'], obs[4]['y_position']]),
