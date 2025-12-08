@@ -49,8 +49,7 @@ config = (
             
         }
     ))
-    .env_runners(num_env_runners = num_workers,
-                 num_envs_per_runner = 1)
+    .env_runners(num_env_runners = num_workers)
     .learners(num_learners = 1)
     .training(
         train_batch_size_per_learner=1000,
