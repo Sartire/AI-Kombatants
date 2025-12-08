@@ -21,8 +21,8 @@ conv_layer_spec = [
 (64, 3, 1, 0),
 ]
 
-num_workers = 10
-num_episodes = 4
+num_workers = 1
+num_episodes = 1
 
 checkpoint_dir = '/kombat_artifacts/checkpoints'
 
