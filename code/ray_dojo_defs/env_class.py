@@ -49,6 +49,7 @@ class MKII_Single_Env(gym.Env):
         # if true, repeat the same action for n_skip_steps
         # otherwise, take a no-op action
         self.skip_repeat = config['skip_repeat']
+        self.reset_delay = config['reset_delay']
 
         self.button_mask = [0, 1, 3, 4, 5, 6, 7, 8]
 
@@ -84,11 +85,12 @@ class MKII_Single_Env(gym.Env):
         self.env.reset(seed, options)
         # take a no action step to get the first observation
         action = np.zeros(self.action_space.n)
-        obs = self.step(action)[0]
+        for i in range(self.reset_delay):
+            obs = self.step(action)
 
-        output = self.convert_obs(obs)
+        return self.convert_obs(obs)
 
-        return output
+        
     def step(self, action):
 
         # insert the action into the action space
