@@ -40,7 +40,7 @@ config = (
                      'skip_repeat': True
                  })
     .rl_module(rl_module_spec=RLModuleSpec(
-        module_cls=Kombatant,
+        module_class=Kombatant,
         observation_space=MKII_obs_space,
         action_space=gym.spaces.MultiBinary(8),
         model_config={
