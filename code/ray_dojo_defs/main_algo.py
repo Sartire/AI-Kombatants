@@ -22,7 +22,7 @@ conv_layer_spec = [
 (64, 1, 1, 0)
 ]
 
-num_workers = 1
+num_workers = 0
 num_episodes = 1
 
 checkpoint_dir = '/kombat_artifacts/checkpoints'
@@ -51,7 +51,8 @@ config = (
             
         }
     ))
-    .env_runners(num_env_runners = num_workers)
+    .env_runners(num_env_runners = num_workers,
+                 num_envs_per_env_runner = 1)
     .learners(num_learners = 1)
     .training(
         train_batch_size_per_learner=1000,
@@ -69,12 +70,21 @@ config = (
     #    evaluation_duration=10)
     )
 
+print('-'* 50)
+print("CONFIG DEFINED")
+print('-'* 50)
+
 
 # ---------------
 # RUN TRAINING!?!?!
 # ---------------
 
 ppo = config.build()
+
+print('-'* 50)
+print("CONFIG BUILT")
+print('-'* 50)
+
 
 for ep in range(num_episodes):
     results = ppo.train()
