@@ -32,7 +32,7 @@ for key in obs.keys():
     data = obs[key]
     print(key)
     print(f'Data type: {type(data)}')
-    print(data)
+    #print(data)
 
 
 print('Image shapes:')
@@ -42,3 +42,28 @@ print(MKII_obs_space['image'].shape)
 print('Additional data shapes:')
 print(obs['additional_data'].shape)
 print(MKII_obs_space['additional_data'].shape)
+
+
+print(f'Checking rewards/after step')
+
+action = gym.spaces.Discrete(21).sample()
+
+obs, reward, terminated, truncated, info = test_env.step(action)
+    
+pec.check_obs(obs, MKII_obs_space, 'step')
+
+print('Reward:')
+print(reward)
+print(type(reward))
+
+print('Terminated:')
+print(terminated)
+print(type(terminated))
+
+print('Truncated:')
+print(truncated)
+print(type(truncated))
+
+print('Info:')
+print(info)
+print(type(info))
