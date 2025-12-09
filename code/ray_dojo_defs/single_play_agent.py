@@ -10,13 +10,15 @@ from ray.rllib.models.torch.torch_action_dist import TorchMultiActionDistributio
 
 # Define your custom env class by subclassing `TorchRLModule`:
 class Kombatant(TorchRLModule):
+    def __init__(self, obs_space, action_space, model_config):
+        super().__init__(self, obs_space, action_space, model_config)
     def setup(self):
         # You have access here to the following already set attributes:
         # self.observation_space
         # self.action_space
         # self.inference_only
         # self.model_config  # <- a dict with custom settings
-        super().setup()
+        
         self.input_shape = self.observation_space['image'].shape
         hidden_dim = self.model_config["hidden_dim"]
         output_dim = self.action_space.n
@@ -77,3 +79,11 @@ class Kombatant(TorchRLModule):
         # Return parameters for the default action distribution, which is
         # `TorchMultiActionDistribution` (action space is `gym.spaces.MultiBinary`).
         return {Columns.ACTION_DIST_INPUTS: action_logits}
+    
+    def parameters(self):
+        
+        param_list = list(self.conv_layers.parameters()) + list(self.fc_head.parameters()) + list(self.fc_final.parameters())
+        names = ['conv_layers', 'fc_head', 'fc_final']
+
+        for _name, param in zip(names, param_list):
+            yield _name, param
