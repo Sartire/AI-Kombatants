@@ -28,6 +28,13 @@ assert isinstance(MKII_obs_space['additional_data'], gym.spaces.Box), 'Additiona
 pec.check_obs(obs['image'], MKII_obs_space['image'], 'reset')
 pec.check_obs(obs['additional_data'], MKII_obs_space['additional_data'], 'reset')
 
+for key in obs.keys():
+    data = obs[key]
+    print(key)
+    print(f'Data type: {type(data)}')
+    print(data)
+
+
 print('Image shapes:')
 print(obs['image'].shape)
 print(MKII_obs_space['image'].shape)
