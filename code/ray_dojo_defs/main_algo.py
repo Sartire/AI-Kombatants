@@ -63,7 +63,8 @@ config = (
         num_epochs=1,
         use_critic=True,
         use_gae=True,
-        lambda_ = 0.95
+        lambda_ = 0.95,
+        gamma = 0.995
         )
     #.evaluation(
     #    # Run one evaluation round every iteration.
