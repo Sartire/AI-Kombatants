@@ -45,7 +45,8 @@ print(additional.shape)
 
 data = {'obs':{'image': img, 'additional_data': additional}}
 
-output = trained(data)
+with torch.no_grad():
+    output = trained(data)
 
 
 logits = output[Columns.ACTION_DIST_INPUTS]
@@ -68,7 +69,8 @@ while not terminated and not truncated:
     additional = torch.tensor(obs['additional_data']).unsqueeze(0)
     data = {'obs':{'image': img, 'additional_data': additional}}
     # feed to network
-    output = trained(data)
+    with torch.no_grad():
+        output = trained(data)
     
     # Feed logits to distribution
     dist = TorchCategorical(logits=output[Columns.ACTION_DIST_INPUTS])

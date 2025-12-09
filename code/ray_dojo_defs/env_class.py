@@ -147,7 +147,7 @@ class MKII_Single_Env(gym.Env):
         self.env.close()
 
     def stop_record(self):
-        self.env.stop_recording()
+        self.env.stop_record()
 
     def render(self):
         return self.env.render()
