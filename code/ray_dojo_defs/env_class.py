@@ -87,7 +87,7 @@ class MKII_Single_Env(gym.Env):
         # take a no action step to get the first observation
         action = np.zeros(self.action_space.n)
         for i in range(self.reset_delay):
-            obs = self.step(action)
+            obs = self.env.step(action)
 
         new_obs, reward, terminated, truncated, info = self.convert_obs(obs)
         return new_obs, info
