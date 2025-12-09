@@ -33,13 +33,13 @@ test_env = MKII_Single_Env(config=env_config)
 print('created env??')
 obs, info = test_env.reset()
 
-img = torch.tensor(obs['image'])
+img = torch.tensor(obs['image']).unsqueeze(0)
 print(img.shape)
 
-additional = torch.tensor(obs['additional_data'])
+additional = torch.tensor(obs['additional_data']).unsqueeze(0)
 print(additional.shape)
 
-data = {'image': img, 'additional_data': additional}
+data = {'obs':{'image': img, 'additional_data': additional}}
 
 logits = trained(data)
 
