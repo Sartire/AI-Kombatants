@@ -10,8 +10,8 @@ from ray.rllib.models.torch.torch_action_dist import TorchMultiActionDistributio
 
 # Define your custom env class by subclassing `TorchRLModule`:
 class Kombatant(TorchRLModule):
-    #def __init__(self, obs_space, action_space, model_config):
-    #    super().__init__(self, obs_space, action_space, model_config)
+    def __init__(self, *args, **kwargs):
+        TorchRLModule.__init__(self, *args, **kwargs)
     def setup(self):
         # You have access here to the following already set attributes:
         # self.observation_space
@@ -80,10 +80,10 @@ class Kombatant(TorchRLModule):
         # `TorchMultiActionDistribution` (action space is `gym.spaces.MultiBinary`).
         return {Columns.ACTION_DIST_INPUTS: action_logits}
     
-    def parameters(self):
-        
-        param_list = list(self.conv_layers.parameters()) + list(self.fc_head.parameters()) + list(self.fc_final.parameters())
-        names = ['conv_layers', 'fc_head', 'fc_final']
-
-        for _name, param in zip(names, param_list):
-            yield _name, param
+#   def parameters(self):
+#       
+#       param_list = list(self.conv_layers.parameters()) + list(self.fc_head.parameters()) + list(self.fc_final.parameters())
+#       names = ['conv_layers', 'fc_head', 'fc_final']
+#
+#       for _name, param in zip(names, param_list):
+#           yield _name, param
