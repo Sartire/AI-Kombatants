@@ -52,7 +52,7 @@ logits = output[Columns.ACTION_DIST_INPUTS]
 
 dist = TorchCategorical(logits=logits)
 
-action = dist.sample().numpy()
+action = dist.sample().item()
 
 
 truncated = False
@@ -73,7 +73,7 @@ while not terminated and not truncated:
     # Feed logits to distribution
     dist = TorchCategorical(logits=output[Columns.ACTION_DIST_INPUTS])
     # get action
-    action = dist.sample().numpy()
+    action = dist.sample().item()
     # add reward
     reward_total += reward
 
