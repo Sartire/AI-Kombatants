@@ -22,8 +22,8 @@ conv_layer_spec = [
 (64, 1, 1, 0)
 ]
 
-num_workers = 20
-num_training_runs = 1
+num_workers = 30
+num_training_runs = 20
 
 checkpoint_dir = '/kombat_artifacts/checkpoints'
 
@@ -58,9 +58,10 @@ config = (
                  gym_env_vectorize_mode = gym.VectorizeMode.ASYNC)
     .learners(num_learners = 1)
     .training(
-        train_batch_size_per_learner=1000,
+        train_batch_size_per_learner=4000,
+        
         lr=0.0001,
-        num_epochs=1,
+        num_epochs=10,
         use_critic=True,
         use_gae=True,
         lambda_ = 0.95,
@@ -95,8 +96,9 @@ print('-'* 50)
 
 
 for ep in range(num_training_runs):
+    print(f'Training montage: {ep}')
     results = ppo.train()
-    pprint(results)
+    #pprint(results)
 
     # save checkpoint
     ppo.save_checkpoint(checkpoint_dir)
