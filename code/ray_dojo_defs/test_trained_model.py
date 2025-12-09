@@ -7,7 +7,7 @@ from single_play_agent import Kombatant
 
 
 from pathlib import Path
-
+import torch
 
 model_check_path = Path('/kombat_artifacts/checkpoints/learner_group/learner/rl_module/default_policy')
 
@@ -33,7 +33,17 @@ test_env = MKII_Single_Env(config=env_config)
 print('created env??')
 obs, info = test_env.reset()
 
-logits = trained(obs['image'])
+img = torch.tensor(obs['image'])
+print(img.shape)
+
+additional = torch.tensor(obs['additional_data'])
+print(additional.shape)
+
+data = {'image': img, 'additional_data': additional}
+
+logits = trained(data)
+
+
 print(logits)
 print(logits.shape)
 
