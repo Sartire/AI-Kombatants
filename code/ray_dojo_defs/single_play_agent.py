@@ -10,8 +10,8 @@ from ray.rllib.models.torch.torch_action_dist import TorchMultiActionDistributio
 
 # Define your custom env class by subclassing `TorchRLModule`:
 class Kombatant(TorchRLModule):
-    def __init__(self, obs_space, action_space, model_config):
-        super().__init__(self, obs_space, action_space, model_config)
+    #def __init__(self, obs_space, action_space, model_config):
+    #    super().__init__(self, obs_space, action_space, model_config)
     def setup(self):
         # You have access here to the following already set attributes:
         # self.observation_space
