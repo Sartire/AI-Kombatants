@@ -9,6 +9,10 @@ from single_play_agent import Kombatant
 from pathlib import Path
 import torch
 
+from ray.rllib.core.distribution.torch.torch_distribution import TorchCategorical
+from ray.rllib.core.columns import Columns
+
+
 model_check_path = Path('/kombat_artifacts/checkpoints/learner_group/learner/rl_module/default_policy')
 
 conv_layer_spec = [
@@ -41,11 +45,18 @@ print(additional.shape)
 
 data = {'obs':{'image': img, 'additional_data': additional}}
 
-logits = trained(data)
+output = trained(data)
 
+
+logits = output[Columns.ACTION_DIST_INPUTS]
+
+dist = TorchCategorical(logits=logits)
+
+action = dist.sample()
 
 print(logits)
 print(logits.shape)
+print(action)
 
 
 
