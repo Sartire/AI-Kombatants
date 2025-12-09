@@ -39,7 +39,7 @@ config = (
                      'record_dir': False,
                      'n_skip_steps': 10,
                      'skip_repeat': True,
-                     'reset_delay': 100
+                     'reset_delay': 174
                  })
     .rl_module(rl_module_spec=RLModuleSpec(
         module_class=Kombatant,
