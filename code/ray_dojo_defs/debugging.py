@@ -22,8 +22,16 @@ obs, info = test_env.reset()
 
 
 assert isinstance(MKII_obs_space, gym.spaces.Dict), "MKII_obs_space is not a Dict"
-assert isinstance(MKII_obs_space['image'], gym.spaces.Dict), 'Image is not a box'
-assert isinstance(MKII_obs_space['additional_data'], gym.spaces.Dict), 'Additional_data is not a box'
+assert isinstance(MKII_obs_space['image'], gym.spaces.Box), 'Image is not a box'
+assert isinstance(MKII_obs_space['additional_data'], gym.spaces.Box), 'Additional_data is not a box'
 
 pec.check_obs(obs['image'], MKII_obs_space['image'], 'reset')
 pec.check_obs(obs['additional_data'], MKII_obs_space['additional_data'], 'reset')
+
+print('Image shapes:')
+print(obs['image'].shape)
+print(MKII_obs_space['image'].shape)
+
+print('Additional data shapes:')
+print(obs['additional_data'].shape)
+print(MKII_obs_space['additional_data'].shape)
