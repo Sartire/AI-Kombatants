@@ -9,7 +9,7 @@ from single_play_agent import Kombatant
 from pathlib import Path
 
 
-model_check_path = Path('/scratch/mcg4aw/kombat_artifacts/checkpoints/learner_group/learner/rl_module/default_policy')
+model_check_path = Path('/kombat_artifacts/checkpoints/learner_group/learner/rl_module/default_policy')
 
 conv_layer_spec = [
 (32, 8, 4, 0),
