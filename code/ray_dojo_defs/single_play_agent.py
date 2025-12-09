@@ -12,6 +12,8 @@ from ray.rllib.models.torch.torch_action_dist import TorchMultiActionDistributio
 class Kombatant(TorchRLModule):
     def __init__(self, *args, **kwargs):
         TorchRLModule.__init__(self, *args, **kwargs)
+
+        self.setup()
     def setup(self):
         # You have access here to the following already set attributes:
         # self.observation_space
