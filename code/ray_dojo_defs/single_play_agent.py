@@ -6,14 +6,21 @@ import torch
 
 from ray.rllib.core.columns import Columns
 from ray.rllib.core.rl_module.torch import TorchRLModule
-from ray.rllib.models.torch.torch_action_dist import TorchMultiActionDistribution
+
+from ray.rllib.utils.annotations import override
+from ray.rllib.core.rl_module.apis import ValueFunctionAPI
+
+from ray.rllib.models.torch.misc import normc_initializer
+from ray.rllib.utils.typing import TensorType
 
 # Define your custom env class by subclassing `TorchRLModule`:
-class Kombatant(TorchRLModule):
+class Kombatant(TorchRLModule, ValueFunctionAPI):
     def __init__(self, *args, **kwargs):
         TorchRLModule.__init__(self, *args, **kwargs)
 
         self.setup()
+
+    @override(TorchRLModule)    
     def setup(self):
         # You have access here to the following already set attributes:
         # self.observation_space
@@ -56,8 +63,12 @@ class Kombatant(TorchRLModule):
             nn.Linear(hidden_dim, output_dim)
         )
 
+        self.value_head = nn.Sequential(
+            nn.Linear(conv_out_size + hidden_dim, hidden_dim),
+            nn.ReLU(),
+            nn.Linear(hidden_dim, 1)
+        )
         
-
 
 
     def _get_conv_output_size(self):
@@ -67,6 +78,7 @@ class Kombatant(TorchRLModule):
             x = self.conv_layers(dummy_input)
             return x.view(1, -1).size(1)
 
+    @override(TorchRLModule)
     def _forward(self, batch, **kwargs):
         
         data = batch[Columns.OBS]
@@ -81,17 +93,54 @@ class Kombatant(TorchRLModule):
         conv_res = self.conv_layers(img)
         conv_res = conv_res.view(conv_res.size(0), -1)
         fc_head_res = self.fc_head(additional)
-        x = torch.cat([conv_res, fc_head_res], dim=1)
-        action_logits = self.fc_final(x)
+        embeddings = torch.cat([conv_res, fc_head_res], dim=1)
+        action_logits = self.fc_final(embeddings)
 
         # Return parameters for the default action distribution, which is
         # `TorchCategoricalDistribution` (action space is `gym.spaces.Discrete`).
         return {Columns.ACTION_DIST_INPUTS: action_logits}
     
-#   def parameters(self):
-#       
-#       param_list = list(self.conv_layers.parameters()) + list(self.fc_head.parameters()) + list(self.fc_final.parameters())
-#       names = ['conv_layers', 'fc_head', 'fc_final']
-#
-#       for _name, param in zip(names, param_list):
-#           yield _name, param
+    @override(TorchRLModule)
+    def _forward_train(self, batch, **kwargs):
+        # Compute the basic 1D feature tensor (inputs to policy- and value-heads).
+        data = batch[Columns.OBS]
+        img = data['image']
+        additional = data['additional_data']
+        if img.shape[1] != self.input_shape[-1]:
+            img = img.permute(0, 3, 1, 2)
+        #img = img.float()/255.0
+        conv_res = self.conv_layers(img)
+        conv_res = conv_res.view(conv_res.size(0), -1)
+        fc_head_res = self.fc_head(additional)
+        embeddings = torch.cat([conv_res, fc_head_res], dim=1)
+        action_logits = self.fc_final(embeddings)
+        # Return features and logits as ACTION_DIST_INPUTS (categorical distribution).
+        return {
+            Columns.ACTION_DIST_INPUTS: action_logits,
+            Columns.EMBEDDINGS: embeddings,
+        }
+
+    @override(ValueFunctionAPI)
+    def compute_values(
+        self,
+        batch: Dict[str, Any],
+        embeddings: Optional[Any] = None,
+    ) -> TensorType:
+        # Features not provided -> We need to compute them first.
+        if embeddings is None:
+            data = batch[Columns.OBS]
+            img = data['image']
+            additional = data['additional_data']
+
+            if img.shape[1] != self.input_shape[-1]:
+                img = img.permute(0, 3, 1, 2)
+
+            #img = img.float()/255.0
+
+            conv_res = self.conv_layers(img)
+            conv_res = conv_res.view(conv_res.size(0), -1)
+            fc_head_res = self.fc_head(additional)
+            embeddings = torch.cat([conv_res, fc_head_res], dim=1)
+
+
+        return self.value_head(embeddings).squeeze(-1)
