@@ -62,7 +62,7 @@ class Kombatant(TorchRLModule):
 
     def _get_conv_output_size(self):
         with torch.no_grad():
-            dummy_input = torch.zeros(1, *self.input_shape)
+            dummy_input = torch.zeros(*self.input_shape)
             x = self.conv_layers(dummy_input)
             return x.view(1, -1).size(1)
 
