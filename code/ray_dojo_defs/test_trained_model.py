@@ -11,8 +11,17 @@ from pathlib import Path
 
 model_check_path = Path('/scratch/mcg4aw/kombat_artifacts/checkpoints/learner_group/learner/rl_module/default_policy')
 
+conv_layer_spec = [
+(32, 8, 4, 0),
+(64, 4, 2, 0),
+(64, 3, 1, 0),
+(64, 1, 1, 0)
+]
 
-trained = Kombatant.from_checkpoint(model_check_path)
+trained = Kombatant(observation_space=MKII_obs_space, 
+                    action_space=gym.spaces.Discrete(21),
+                    config={'hidden_dim': 256, 
+                            'conv_layers_spec': conv_layer_spec}).from_checkpoint(model_check_path)
 
 
 env_config={
