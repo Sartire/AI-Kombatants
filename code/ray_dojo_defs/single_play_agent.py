@@ -76,7 +76,7 @@ class Kombatant(TorchRLModule):
         if img.shape[1] != self.input_shape[-1]:
             img = img.permute(0, 3, 1, 2)
 
-        img = img.float()/255.0
+        #img = img.float()/255.0
 
         conv_res = self.conv_layers(img)
         conv_res = conv_res.view(conv_res.size(0), -1)

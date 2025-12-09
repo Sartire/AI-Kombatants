@@ -25,12 +25,12 @@ MKII_obs_space = gym.spaces.Dict({
 })
 '''
 MKII_obs_space = gym.spaces.Dict({
-        'image': gym.spaces.Box(low=0, high=255, shape=(224, 320, 3), dtype=np.uint8),
+        'image': gym.spaces.Box(low=0, high=1, shape=(224, 320, 3), dtype=np.float32),
         #'health': gym.spaces.Box(low=0, high=120, shape=(1,), dtype=np.float),
         #'enemy_health': gym.spaces.Box(low=0, high=120, shape=(1,), dtype=np.float),
         #'player_location': gym.spaces.Box(low=-np.inf, high=np.inf, shape=(2,), dtype=np.float),
         #'enemy_location': gym.spaces.Box(low=-np.inf, high=np.inf, shape=(2,), dtype=np.float),  
-        'additional_data': gym.spaces.Box(low=-np.inf, high=np.inf, shape=(6,), dtype=np.float16)
+        'additional_data': gym.spaces.Box(low=-np.inf, high=np.inf, shape=(6,), dtype=np.float32)
     })
 
 
@@ -65,9 +65,10 @@ class MKII_Single_Env(gym.Env):
     def convert_obs(self, obs):
         # obs is the tuple output by env.step
         new_obs = {
-            'image': obs[0], 
+            # convert uint8 image to float
+            'image': obs[0].astype(np.float32) / 255.0 , 
             'additional_data': np.array([obs[4]['health'], obs[4]['enemy_health'], obs[4]['x_position'], obs[4]['y_position'], 
-                                         obs[4]['enemy_x_position'], obs[4]['enemy_y_position']], dtype=np.float16),   
+                                         obs[4]['enemy_x_position'], obs[4]['enemy_y_position']], dtype=np.float32),   
             #'health': obs[4]['health'],
             #'enemy_health': obs[4]['enemy_health'],
             #'player_location': np.array([obs[4]['x_position'], obs[4]['y_position']]),
