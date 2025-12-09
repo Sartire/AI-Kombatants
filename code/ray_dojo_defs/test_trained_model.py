@@ -24,10 +24,10 @@ conv_layer_spec = [
 
 trained = Kombatant.from_checkpoint(model_check_path)
 
-print('loaded model??')
+#print('loaded model??')
 env_config={
                      'state': 'Level1.JaxVsBaraka',
-                     'record_dir': False, #'/kombat_artifacts/recordings',
+                     'record_dir': '/kombat_artifacts/recordings',
                      'n_skip_steps': 10,
                      'skip_repeat': True,
                      'reset_delay': 174
@@ -54,9 +54,33 @@ dist = TorchCategorical(logits=logits)
 
 action = dist.sample()
 
-print(logits)
-print(logits.shape)
-print(action)
+
+truncated = False
+terminated = False
+
+reward_total = 0
+
+while not terminated and not truncated:
+    obs, reward, truncated, terminated, info = test_env.step(action)
+    
+    # convert obs to tensor
+    img = torch.tensor(obs['image']).unsqueeze(0)
+    additional = torch.tensor(obs['additional_data']).unsqueeze(0)
+    data = {'obs':{'image': img, 'additional_data': additional}}
+    # feed to network
+    output = trained(data)
+    
+    # Feed logits to distribution
+    dist = TorchCategorical(logits=output[Columns.ACTION_DIST_INPUTS])
+    # get action
+    action = dist.sample()
+    # add reward
+    reward_total += reward
+
+
+print(reward_total)
+test_env.stop_record()
+test_env.close()
 
 
 
