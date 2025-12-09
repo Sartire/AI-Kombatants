@@ -16,6 +16,7 @@ class Kombatant(TorchRLModule):
         # self.action_space
         # self.inference_only
         # self.model_config  # <- a dict with custom settings
+        super().setup()
         self.input_shape = self.observation_space['image'].shape
         hidden_dim = self.model_config["hidden_dim"]
         output_dim = self.action_space.n
