@@ -4,6 +4,7 @@ import gymnasium as gym
 from ray.rllib.core.columns import Columns
 
 import numpy as np
+from itertools import product
 #from pprint import pprint
 
 '''
@@ -51,16 +52,34 @@ class MKII_Single_Env(gym.Env):
         self.skip_repeat = config['skip_repeat']
         self.reset_delay = config['reset_delay']
 
-        self.button_mask = [0, 1, 3, 4, 5, 6, 7, 8]
+        #self.button_mask = [0, 1, 3, 4, 5, 6, 7, 8]
+        # Set up discrete action space
+        button_mapping = {'start':3,
+                  'up':4,
+                  'down':5,
+                  'left':6,
+                  'right':7,
+                  'A':1,
+                  'B':0,
+                  'C':8}
+        multi_inputs = product(['A','B','C'],['up','down','left','right'])
+        moves = [[button_mapping[b1], button_mapping[b2]] for b1,b2 in multi_inputs]
+        moveset = [[]] + [[item] for item in button_mapping.values()] + moves
+        action_dict = dict()
 
+        for i, m in enumerate(moveset):
+            action_dict[i] = m
 
+        self.action_dict = action_dict
+
+        # actually create the environment
         self.env = retro.make(game='MortalKombatII-Genesis',
                               render_mode='rgb_array',
                               state = self.initial_state,
                               record = self.record_dir)
         
         self.observation_space = MKII_obs_space
-        self.action_space = gym.spaces.MultiBinary(8)
+        self.action_space = gym.spaces.Discrete(21)
 
     def convert_obs(self, obs):
         # obs is the tuple output by env.step
@@ -93,14 +112,20 @@ class MKII_Single_Env(gym.Env):
         new_obs, reward, terminated, truncated, info = self.convert_obs(obs)
         return new_obs, info
 
-        
+    
+    def convert_dicrete_action(self, discrete_action):
+        button_idxs = self.action_dict[discrete_action]
+        new_action = np.zeros(12)
+        for bi in button_idxs:
+            new_action[bi] = 1
+        return new_action
+
     def step(self, action):
 
-        # insert the action into the action space
-        # some of the buttons don't do anything (?)
-        full_action = np.zeros(self.env.action_space.n)
-        for i, mask in enumerate(self.button_mask):
-            full_action[mask] = action[i]
+        # insert the discrete action into the binary action space
+        full_action = self.convert_dicrete_action(action)
+        
+        
 
         if self.skip_repeat:
             skip_action = full_action

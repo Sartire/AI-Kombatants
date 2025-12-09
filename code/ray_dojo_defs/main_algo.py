@@ -44,7 +44,7 @@ config = (
     .rl_module(rl_module_spec=RLModuleSpec(
         module_class=Kombatant,
         observation_space=MKII_obs_space,
-        action_space=gym.spaces.MultiBinary(8),
+        action_space=gym.spaces.Discrete(21),
         model_config={
             'hidden_dim': 256,
             'conv_layers_spec': conv_layer_spec,

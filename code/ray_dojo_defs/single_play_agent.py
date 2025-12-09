@@ -85,7 +85,7 @@ class Kombatant(TorchRLModule):
         action_logits = self.fc_final(x)
 
         # Return parameters for the default action distribution, which is
-        # `TorchMultiActionDistribution` (action space is `gym.spaces.MultiBinary`).
+        # `TorchCategoricalDistribution` (action space is `gym.spaces.Discrete`).
         return {Columns.ACTION_DIST_INPUTS: action_logits}
     
 #   def parameters(self):
