@@ -40,7 +40,7 @@ class Kombatant(TorchRLModule):
             conv_layers.append(nn.MaxPool2d(kernel_size=2, stride=2))
             prev_dim = out_dim
 
-        conv_layers.append(nn.Conv2d(in_channels=self.conv_channel_sizes[-1], out_channels= 1, kernel_size=1, stride=1, padding=0))
+        #conv_layers.append(nn.Conv2d(in_channels=prev_dim, out_channels=prev_dim, kernel_size=1, stride=1, padding=0))
         self.conv_layers = nn.Sequential(*conv_layers)
 
         conv_out_size = self._get_conv_output_size()
