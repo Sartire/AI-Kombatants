@@ -89,7 +89,8 @@ class MKII_Single_Env(gym.Env):
         for i in range(self.reset_delay):
             obs = self.step(action)
 
-        return self.convert_obs(obs)
+        new_obs, reward, terminated, truncated, info = convert_obs(obs)
+        return new_obs, info
 
         
     def step(self, action):
