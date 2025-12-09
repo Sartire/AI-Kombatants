@@ -54,7 +54,8 @@ config = (
     .env_runners(num_env_runners = num_workers,
                  # only one emulator can be running per process
                  num_envs_per_env_runner = 1,
-                 num_cpus_per_env_runner = 1)
+                 num_cpus_per_env_runner = 1,
+                 gym_env_vectorize_mode = gym.VectorizeMode.ASYNC)
     .learners(num_learners = 1)
     .training(
         train_batch_size_per_learner=1000,
