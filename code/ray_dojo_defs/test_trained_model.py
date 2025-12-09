@@ -18,12 +18,9 @@ conv_layer_spec = [
 (64, 1, 1, 0)
 ]
 
-trained = Kombatant(observation_space=MKII_obs_space, 
-                    action_space=gym.spaces.Discrete(21),
-                    config={'hidden_dim': 256, 
-                            'conv_layers_spec': conv_layer_spec}).from_checkpoint(model_check_path)
+trained = Kombatant.from_checkpoint(model_check_path)
 
-
+print('loaded model??')
 env_config={
                      'state': 'Level1.JaxVsBaraka',
                      'record_dir': False,
@@ -33,6 +30,6 @@ env_config={
                  }
 
 test_env = MKII_Single_Env(config=env_config)
-
+print('created env??')
 obs, info = test_env.reset()
 
