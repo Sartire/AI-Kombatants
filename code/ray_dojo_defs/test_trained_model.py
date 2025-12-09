@@ -23,7 +23,7 @@ trained = Kombatant.from_checkpoint(model_check_path)
 print('loaded model??')
 env_config={
                      'state': 'Level1.JaxVsBaraka',
-                     'record_dir': False,
+                     'record_dir': '/kombat_artifacts/recordings',
                      'n_skip_steps': 10,
                      'skip_repeat': True,
                      'reset_delay': 100
@@ -32,4 +32,9 @@ env_config={
 test_env = MKII_Single_Env(config=env_config)
 print('created env??')
 obs, info = test_env.reset()
+
+logits = trained(obs['image'])
+print(logits)
+print(logits.shape)
+
 
