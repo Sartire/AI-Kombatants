@@ -62,7 +62,8 @@ class Kombatant(TorchRLModule):
 
     def _get_conv_output_size(self):
         with torch.no_grad():
-            dummy_input = torch.zeros(*self.input_shape)
+            dummy_input = torch.zeros(1, *self.input_shape)
+            dummy_input = dummy_input.permute(0, 3, 1, 2)
             x = self.conv_layers(dummy_input)
             return x.view(1, -1).size(1)
 
@@ -71,6 +72,9 @@ class Kombatant(TorchRLModule):
         data = batch[Columns.OBS]
         img = data['image']
         additional = data['additional_data']
+
+        if img.shape[1] != self.input_shape[-1]:
+            img = img.permute(0, 3, 1, 2)
 
         conv_res = self.conv_layers(img)
         conv_res = conv_res.view(conv_res.size(0), -1)
