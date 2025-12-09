@@ -123,8 +123,8 @@ class Kombatant(TorchRLModule, ValueFunctionAPI):
     @override(ValueFunctionAPI)
     def compute_values(
         self,
-        batch: Dict[str, Any],
-        embeddings: Optional[Any] = None,
+        batch,
+        embeddings = None,
     ) -> TensorType:
         # Features not provided -> We need to compute them first.
         if embeddings is None:
