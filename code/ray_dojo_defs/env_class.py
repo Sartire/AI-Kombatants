@@ -96,9 +96,9 @@ class MKII_Single_Env(gym.Env):
             
         }
 
-        reward = obs[1],
-        terminated = obs[2],
-        truncated = obs[3],
+        reward = obs[1]
+        terminated = obs[2]
+        truncated = obs[3]
         info = obs[4]
         return new_obs, reward, terminated, truncated, info
 
