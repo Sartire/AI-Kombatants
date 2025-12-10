@@ -135,13 +135,14 @@ class MKII_Single_Env(gym.Env):
         
 
         obs = self.env.step(full_action)
-
+        reward = obs[1]
         if self.n_skip_steps > 0:
             for _ in range(self.n_skip_steps):
                 obs = self.env.step(skip_action)
+                reward += obs[1]
 
-        output = self.convert_obs(obs)
-        return output
+        final_output, not_reward, terminated, truncated, info = self.convert_obs(obs)
+        return final_output, reward, terminated, truncated, info
     
     def close(self):
         self.env.close()
