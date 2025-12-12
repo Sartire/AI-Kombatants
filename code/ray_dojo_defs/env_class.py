@@ -86,7 +86,7 @@ class MKII_Single_Env(gym.Env):
         for i in range(self.reset_delay):
             obs, reward, terminated, truncated, info = self.inner_env.step(action)
 
-        new_obs = self.convert_obs(obs)
+        new_obs = self.convert_obs(obs, info)
         self.prev_healths = {'p1': info['health'], 'p2': info['enemy_health']}
         return new_obs, info
 
