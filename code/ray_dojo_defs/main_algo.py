@@ -99,13 +99,14 @@ def create_config_from_spec(spec_name):
             train_batch_size_per_learner=10000,
             minibatch_size=128,
 
-            lr=tune.grid_search([1e-3,1e-4]),
+            lr=1e-4,
             num_epochs=NUM_EPOCHS,
             use_critic=True,
             use_gae=True,
-            lambda_ = tune.grid_search([0.9,0.99]),
-            gamma = tune.grid_search([0.9,0.995])
+            lambda_ = 0.99,
+            gamma = 0.995
             )
+            
         )
     return config
 
