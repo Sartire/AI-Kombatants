@@ -5,7 +5,7 @@ os.environ["TUNE_DISABLE_STRICT_METRIC_CHECKING"] = "1"
 
 from env_class import MKII_Single_Env, MKII_obs_space
 from single_play_agent import Kombatant
-
+from callbacks import EpisodeReturn
 import numpy as np
 
 from ray.rllib.algorithms.ppo import PPOConfig
@@ -42,17 +42,7 @@ base_storage_path = Path('/kombat_artifacts/checkpoints')
 current_dir = Path(__file__).parent
 
 
-from ray.rllib.callbacks.callbacks import RLlibCallback
 
-class EpisodeReturn(RLlibCallback):
-    def __init__(self):
-        super().__init__()
-        # Keep some global state in between individual callback events.
-        self.overall_sum_of_rewards = 0.0
-
-    def on_episode_end(self, *, episode, **kwargs):
-        self.overall_sum_of_rewards += episode.get_return()
-        print(f"Episode done. R={episode.get_return()} Global SUM={self.overall_sum_of_rewards}")
 
 # load configs
 with open(current_dir / 'model_configs.yaml', 'r') as f:
