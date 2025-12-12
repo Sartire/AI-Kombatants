@@ -29,6 +29,8 @@ num_workers = 30
 
 NUM_EPOCHS = 10
 
+NUM_ITERATIONS = 1
+
 
 ray.init(num_cpus=num_workers, num_gpus=1)
 
@@ -95,6 +97,9 @@ def create_config_from_spec(spec_name):
 
 checkpoint_tracker = dict()
 
+pprint(algo_configs)
+pprint(model_configs)
+
 for spec_name in algo_configs.keys():
     config, storage_dir = create_config_from_spec(spec_name)
 
@@ -105,7 +110,7 @@ for spec_name in algo_configs.keys():
         config=config.to_dict(),
         storage_path = base_storage_path,
         name = spec_name,
-        stop={'training_iteration': 1},
+        stop={'training_iteration': NUM_ITERATIONS},
         metric="episode_reward_mean",
         mode="max"
     )
