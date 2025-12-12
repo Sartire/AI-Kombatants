@@ -34,7 +34,8 @@ NUM_ITERATIONS = 1
 VEC_MODE = gym.VectorizeMode.ASYNC
 
 
-ray.init(num_cpus=num_workers, num_gpus=1)
+ray.init(num_cpus=num_workers, num_gpus=1,
+         _temp_dir='/kombat_artifacts/ray_tmp')
 
 base_storage_path = Path('/kombat_artifacts/checkpoints')
 
