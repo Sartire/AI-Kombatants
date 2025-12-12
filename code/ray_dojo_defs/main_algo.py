@@ -91,7 +91,7 @@ def create_config_from_spec(spec_name):
         .learners(num_learners = 1,
                   num_gpus_per_learner = 1)
         .training(
-            train_batch_size_per_learner=tune.choice([2000,4000]),
+            train_batch_size_per_learner=tune.choice([200,400]),
             minibatch_size=128,
 
             lr=tune.grid_search([1e-3,1e-4]),
