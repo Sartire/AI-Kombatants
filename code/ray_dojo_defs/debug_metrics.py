@@ -88,7 +88,7 @@ def create_config_from_spec(spec_name):
         .learners(num_learners = 1,
                   num_gpus_per_learner = 1)
         .training(
-            train_batch_size_per_learner=2000,
+            train_batch_size_per_learner=20000,
             minibatch_size=128,
 
             lr=1e-3,
@@ -111,7 +111,7 @@ def create_config_from_spec(spec_name):
     )
     return config
 
-config = create_config_from_spec('no_skip_norm')
+config = create_config_from_spec('skip_1_norm')
 
 tuner = Tuner("PPO",
     param_space=config.to_dict(),
