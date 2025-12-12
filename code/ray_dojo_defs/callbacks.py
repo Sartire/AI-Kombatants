@@ -6,5 +6,5 @@ class EpisodeReturn(RLlibCallback):
     def on_episode_end(self, *, episode, metrics_logger, **kwargs):
         
         reward_total = np.sum(episode.get_rewards())
-        metrics_logger.log_value("episode_return", reward_total, reduce="mean", window=50)
+        metrics_logger.log_value("episode_return", reward_total, reduce="mean", window=10)
 
