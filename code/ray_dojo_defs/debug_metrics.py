@@ -105,7 +105,7 @@ def create_config_from_spec(spec_name):
         evaluation_duration = 1,
         evaluation_duration_unit = 'episode'
         )
-        .callbacks(EpisodeReturn)
+        .callbacks(callbacks_class= EpisodeReturn)
        
         
     )
