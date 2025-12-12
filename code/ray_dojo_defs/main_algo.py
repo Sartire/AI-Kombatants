@@ -101,7 +101,7 @@ pprint(algo_configs)
 pprint(model_configs)
 
 for spec_name in algo_configs.keys():
-    config, storage_dir = create_config_from_spec(spec_name)
+    config = create_config_from_spec(spec_name)
 
     spec_start_time = time()
 
