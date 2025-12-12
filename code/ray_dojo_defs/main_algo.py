@@ -31,6 +31,8 @@ NUM_EPOCHS = 10
 
 NUM_ITERATIONS = 1
 
+VEC_MODE = gym.VectorizeMode.ASYNC
+
 
 ray.init(num_cpus=num_workers, num_gpus=1)
 
@@ -80,7 +82,7 @@ def create_config_from_spec(spec_name):
                      num_envs_per_env_runner = 1,
                      num_cpus_per_env_runner = 1,
                      num_gpus_per_env_runner = 0,
-                     gym_env_vectorize_mode = gym.VectorizeMode.SYNC)
+                     gym_env_vectorize_mode = VEC_MODE)
         .learners(num_learners = 1,
                   num_gpus_per_learner = 1)
         .training(
