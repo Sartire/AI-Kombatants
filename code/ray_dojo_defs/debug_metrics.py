@@ -131,7 +131,7 @@ if trial.last_result:
         if "reward" in key.lower() or "return" in key.lower() or "episode" in key.lower():
             print(f"  {key}: {trial.last_result[key]}")
 
-pprint(results.keys())
+
 
 x = trial.last_result
 x['config'] = None
