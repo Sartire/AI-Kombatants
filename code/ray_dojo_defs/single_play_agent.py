@@ -144,8 +144,10 @@ class Kombatant(TorchRLModule, ValueFunctionAPI):
 
         if Columns.STATE_IN in batch:
             state_in = batch[Columns.STATE_IN]
+            h0, c0 = state_in['h'], state_in['c']
         else:
             state_in = self._get_initial_state(batch_size=img.shape[0])
+            h0, c0 = state_in
 
         # run convolution -----
         # move channels to dim 1
@@ -164,8 +166,6 @@ class Kombatant(TorchRLModule, ValueFunctionAPI):
         merged = self.fc_final(merged)
 
         # pass to lstm
-        h0, c0 = state_in['h'], state_in['c']
-
         embeddings, (h1,c1) = self.lstm(merged, (h0.unsqueeze(0), c0.unsqueeze(0)))
 
         state_out = {
