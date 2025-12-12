@@ -114,7 +114,7 @@ def create_config_from_spec(spec_name):
 config = create_config_from_spec('no_skip_norm')
 
 tuner = Tuner("PPO",
-    config=config.to_dict(),
+    param_space=config.to_dict(),
     stop={"training_iteration": 2},
     storage_path = base_storage_path,
     name = 'debug')
