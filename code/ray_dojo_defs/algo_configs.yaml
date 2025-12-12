@@ -9,16 +9,3 @@ skip_1:
 skip_2:
   n_skip_steps: 2
   which_model_config: base
-
-
-no_skip_norm:
-  n_skip_steps: 0
-  which_model_config: with_norm
-
-skip_1_norm:
-  n_skip_steps: 1
-  which_model_config: with_norm
-
-skip_2_norm:
-  n_skip_steps: 2
-  which_model_config: with_norm

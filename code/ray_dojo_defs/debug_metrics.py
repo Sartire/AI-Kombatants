@@ -111,7 +111,7 @@ def create_config_from_spec(spec_name):
     )
     return config
 
-config = create_config_from_spec('skip_1_norm')
+config = create_config_from_spec('skip_1')
 
 tuner = Tuner("PPO",
     param_space=config.to_dict(),
