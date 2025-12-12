@@ -105,10 +105,10 @@ class MKII_Single_Env(gym.Env):
         
         
 
-        if self.skip_repeat:
-            skip_action = full_action
-        else:
-            skip_action = np.zeros(self.inner_env.action_space.n)
+        #if self.skip_repeat:
+        #    skip_action = full_action
+        #else:
+        #    skip_action = np.zeros(self.inner_env.action_space.n)
 
         num_steps = self.n_skip_steps + 1
 
