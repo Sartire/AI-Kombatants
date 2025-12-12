@@ -83,7 +83,7 @@ class Kombatant(TorchRLModule, ValueFunctionAPI):
         self.lstm = nn.LSTM(input_size=hidden_dim, hidden_size=embedding_dim, batch_first=True,
                             num_layers = num_lstm_layers )
         
-
+        self._lstm_size = embedding_dim
 
         # policy and value heads
         self.policy_head = nn.Linear(embedding_dim, output_dim)
@@ -142,7 +142,10 @@ class Kombatant(TorchRLModule, ValueFunctionAPI):
         img = data['image']
         additional = data['additional_data']
 
-        state_in = batch[Columns.STATE_IN]
+        if Columns.STATE_IN in batch:
+            state_in = batch[Columns.STATE_IN]
+        else:
+            state_in = self._get_initial_state(batch_size=img.shape[0])
 
         # run convolution -----
         # move channels to dim 1
@@ -171,3 +174,10 @@ class Kombatant(TorchRLModule, ValueFunctionAPI):
         }
 
         return embeddings, state_out
+
+    def _get_initial_state(self, batch_size):
+        """Get initial LSTM state"""
+        device = next(self.parameters()).device
+        h = torch.zeros(1, batch_size, self._lstm_size, device=device)
+        c = torch.zeros(1, batch_size, self._lstm_size, device=device)
+        return (h, c)
