@@ -118,7 +118,7 @@ class MKII_Single_Env(gym.Env):
                 break
                 #reward += obs[1]
 
-        new_obs = self.convert_obs(obs)
+        new_obs = self.convert_obs(obs, info)
 
         # calculate reward
         reward = self.health_weights[0] * (info['health'] - self.prev_healths['p1']) + self.health_weights[1] * (info['enemy_health'] - self.prev_healths['p2'])
