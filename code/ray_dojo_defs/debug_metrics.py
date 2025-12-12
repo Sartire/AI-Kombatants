@@ -115,9 +115,18 @@ config = create_config_from_spec('no_skip_norm')
 
 tuner = Tuner("PPO",
     param_space=config.to_dict(),
-    stop={"training_iteration": 2},
-    storage_path = base_storage_path,
-    name = 'debug')
+    tune_config=tune.TuneConfig(
+        metric="episode_reward_mean",
+        mode="max",
+        num_samples=10,  # Number of trials
+    ),
+    run_config=tune.RunConfig(
+        stop={"episode_reward_mean": 450},
+        storage_path = base_storage_path,
+        name = 'debug'
+    )
+)
+ 
 
 results = tuner.fit()
 
