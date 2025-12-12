@@ -36,7 +36,7 @@ num_workers = parser.parse_args().num_workers
 
 NUM_EPOCHS = 10
 
-NUM_ITERATIONS = 15
+NUM_ITERATIONS = 20
 
 VEC_MODE = gym.VectorizeMode.ASYNC
 
@@ -115,6 +115,10 @@ checkpoint_tracker = dict()
 pprint(algo_configs)
 pprint(model_configs)
 
+import os
+
+#os.environ["TUNE_DISABLE_STRICT_METRIC_CHECKING"] = "1"
+
 for spec_name in algo_configs.keys():
     config = create_config_from_spec(spec_name)
 
@@ -125,16 +129,16 @@ for spec_name in algo_configs.keys():
     tuner = Tuner("PPO",
         param_space=config.to_dict(),
         tune_config=tune.TuneConfig(
-            metric="env_runner/agent_episode_return_mean/default_agent",
+            metric="env_runner/agent_episode_return_mean",
             mode="max",
-            num_samples=10,  # Number of trials
+            num_samples=2,  # Number of trials
         ),
         run_config=tune.RunConfig(
             stop={"training_iteration": NUM_ITERATIONS},
             storage_path = base_storage_path,
             name = spec_name,
             checkpoint_config=tune.CheckpointConfig(num_to_keep=3,
-                                                    checkpoint_score_attribute='env_runner/agent_episode_return_mean/default_agent',
+                                                    checkpoint_score_attribute='env_runner/agent_episode_return_mean',
                                                     checkpoint_score_order='max')
         )
     )
@@ -145,7 +149,7 @@ for spec_name in algo_configs.keys():
     result_df.to_csv(base_storage_path / spec_name/ f'{spec_name}_results.csv')
     
 
-    best_result = results.get_best_result(metric="env_runner/agent_episode_return_mean/default_agent",mode="max")
+    best_result = results.get_best_result(metric="env_runner/agent_episode_return_mean",mode="max")
     
     br_path = best_result.path
     br_cps = best_result.best_checkpoints
