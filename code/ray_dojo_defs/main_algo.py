@@ -124,7 +124,7 @@ for spec_name in algo_configs.keys():
     tuner = Tuner("PPO",
         param_space=config.to_dict(),
         tune_config=tune.TuneConfig(
-            metric="episode_reward_mean",
+            metric="env_runner/agent_episode_return_mean/default_agent",
             mode="max",
             num_samples=10,  # Number of trials
         ),
