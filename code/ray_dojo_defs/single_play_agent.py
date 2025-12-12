@@ -97,6 +97,7 @@ class Kombatant(TorchRLModule, ValueFunctionAPI):
             dummy_input = torch.zeros(1, *self.input_shape)
             dummy_input = dummy_input.permute(0, 3, 1, 2)
             x = self.conv_layers(dummy_input)
+            print(x.size())
             return x.view(1, -1).size(1)
 
     @override(TorchRLModule)

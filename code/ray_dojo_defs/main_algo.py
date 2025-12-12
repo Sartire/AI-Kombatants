@@ -18,6 +18,10 @@ import yaml
 from time import time
 import pickle
 
+import argparse
+
+parser = argparse.ArgumentParser()
+parser.add_argument("--num_workers", type=int, default=30)
 
 # ------------------------
 # SETUP
@@ -25,7 +29,7 @@ import pickle
 # out channels, kernel_size, stride, padding
 
 
-num_workers = 30
+num_workers = parser.parse_args().num_workers
 
 NUM_EPOCHS = 10
 
@@ -78,7 +82,7 @@ def create_config_from_spec(spec_name):
             action_space=gym.spaces.Discrete(21),
             model_config= this_model_config
         ))
-        .env_runners(num_env_runners = num_workers - 5,
+        .env_runners(num_env_runners = max(num_workers - 5, 1),
                      # only one emulator can be running per process
                      num_envs_per_env_runner = 1,
                      num_cpus_per_env_runner = 1,
