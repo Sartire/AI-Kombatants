@@ -117,3 +117,5 @@ if trial.last_result:
     for key in sorted(trial.last_result.keys()):
         if "reward" in key.lower() or "return" in key.lower() or "episode" in key.lower():
             print(f"  {key}: {trial.last_result[key]}")
+
+ray.shutdown()

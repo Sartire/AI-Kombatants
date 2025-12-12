@@ -7,6 +7,7 @@ import numpy as np
 
 from ray.rllib.algorithms.ppo import PPOConfig
 from ray.rllib.core.rl_module.rl_module import RLModuleSpec
+from ray.rllib.models import ModelCatalog
 from ray import tune
 import ray
 
@@ -66,7 +67,9 @@ def create_config_from_spec(spec_name):
     #storage_dir = base_storage_path / spec_name
 
     config = (
-        PPOConfig()
+        PPOConfig().api_stack(
+        enable_rl_module_and_learner=True,
+        enable_env_runner_and_connector_v2=True)
         .environment(env=MKII_Single_Env,
                      env_config={
                          'state': 'Level1.JaxVsBaraka',
