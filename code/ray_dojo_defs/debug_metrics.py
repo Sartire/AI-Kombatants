@@ -88,7 +88,7 @@ def create_config_from_spec(spec_name):
         .learners(num_learners = 1,
                   num_gpus_per_learner = 1)
         .training(
-            train_batch_size_per_learner=200,
+            train_batch_size_per_learner=2000,
             minibatch_size=128,
 
             lr=1e-3,
@@ -102,7 +102,7 @@ def create_config_from_spec(spec_name):
         evaluation_interval=1,
         evaluation_num_workers = 1,
 
-        evaluation_duration = 1,
+        evaluation_duration = 10,
         evaluation_duration_unit = 'episode'
         )
         .callbacks(callbacks_class= EpisodeReturn)
