@@ -41,6 +41,19 @@ ray.init(num_cpus=num_workers, num_gpus=1,
 base_storage_path = Path('/kombat_artifacts/checkpoints')
 current_dir = Path(__file__).parent
 
+
+from ray.rllib.callbacks.callbacks import RLlibCallback
+
+class EpisodeReturn(RLlibCallback):
+    def __init__(self):
+        super().__init__()
+        # Keep some global state in between individual callback events.
+        self.overall_sum_of_rewards = 0.0
+
+    def on_episode_end(self, *, episode, **kwargs):
+        self.overall_sum_of_rewards += episode.get_return()
+        print(f"Episode done. R={episode.get_return()} Global SUM={self.overall_sum_of_rewards}")
+
 # load configs
 with open(current_dir / 'model_configs.yaml', 'r') as f:
     model_configs = yaml.full_load(f)
@@ -102,6 +115,7 @@ def create_config_from_spec(spec_name):
         evaluation_duration = 1,
         evaluation_duration_unit = 'episode'
         )
+        .callbacks(EpisodeReturn)
        
         
     )
