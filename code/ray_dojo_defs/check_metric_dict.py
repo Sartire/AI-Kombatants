@@ -6,5 +6,6 @@ from single_play_agent import Kombatant
 from callbacks import EpisodeReturn
 
 dict = pickle.load(open('/kombat_artifacts/debug_metrics.p', 'rb'))
+dict['config'] = None
 
-pprint(dict.keys())
+#pprint(dict.keys())
