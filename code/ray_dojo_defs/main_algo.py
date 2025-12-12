@@ -2,6 +2,7 @@
 
 from env_class import MKII_Single_Env, MKII_obs_space
 from single_play_agent import Kombatant
+from callbacks import EpisodeReturn
 
 import numpy as np
 import pandas as pd
@@ -36,7 +37,7 @@ num_workers = parser.parse_args().num_workers
 
 NUM_EPOCHS = 10
 
-NUM_ITERATIONS = 20
+NUM_ITERATIONS = 1
 
 VEC_MODE = gym.VectorizeMode.ASYNC
 
@@ -104,8 +105,8 @@ def create_config_from_spec(spec_name):
             use_critic=True,
             use_gae=True,
             lambda_ = 0.99,
-            gamma = 0.995
-            )
+            gamma = 0.995)
+        .callbacks(callbacks_class= EpisodeReturn)
             
         )
     return config
