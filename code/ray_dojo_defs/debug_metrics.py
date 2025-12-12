@@ -131,6 +131,12 @@ if trial.last_result:
         if "reward" in key.lower() or "return" in key.lower() or "episode" in key.lower():
             print(f"  {key}: {trial.last_result[key]}")
 
-pickle.dump(trial.last_result, open('/kombat_artifacts/debug_metrics.p', 'wb'))
+pprint(results.keys())
+
+x = trial.last_result
+x['config'] = None
+pickle.dump(x, open('/kombat_artifacts/debug_metrics.p', 'wb'))
+
+pprint(x)
 
 ray.shutdown()
