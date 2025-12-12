@@ -130,7 +130,7 @@ for spec_name in algo_configs.keys():
     tuner = Tuner("PPO",
         param_space=config.to_dict(),
         tune_config=tune.TuneConfig(
-            metric="env_runner/agent_episode_return_mean",
+            metric="env_runners/episode_return_mean",
             mode="max",
             num_samples=2,  # Number of trials
         ),
@@ -139,7 +139,7 @@ for spec_name in algo_configs.keys():
             storage_path = base_storage_path,
             name = spec_name,
             checkpoint_config=tune.CheckpointConfig(num_to_keep=3,
-                                                    checkpoint_score_attribute='env_runner/agent_episode_return_mean',
+                                                    checkpoint_score_attribute='env_runners/episode_return_mean',
                                                     checkpoint_score_order='max')
         )
     )
@@ -150,7 +150,7 @@ for spec_name in algo_configs.keys():
     result_df.to_csv(base_storage_path / spec_name/ f'{spec_name}_results.csv')
     
 
-    best_result = results.get_best_result(metric="env_runner/agent_episode_return_mean",mode="max")
+    best_result = results.get_best_result(metric="env_runners/episode_return_mean",mode="max")
     
     br_path = best_result.path
     br_cps = best_result.best_checkpoints
