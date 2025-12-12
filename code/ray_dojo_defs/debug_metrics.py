@@ -95,7 +95,16 @@ def create_config_from_spec(spec_name):
             lambda_ = 0.99,
             gamma = 0.995
             )
+        .evaluation(
+        evaluation_interval=1,
+        evaluation_num_workers = 1,
+
+        evaluation_duration = 1,
+        evaluation_duration_unit = 'episode'
         )
+       
+        
+    )
     return config
 
 config = create_config_from_spec('no_skip_norm')
