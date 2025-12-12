@@ -4,11 +4,13 @@ from env_class import MKII_Single_Env, MKII_obs_space
 from single_play_agent import Kombatant
 
 import numpy as np
+import pandas as pd
 
 from ray.rllib.algorithms.ppo import PPOConfig
 from ray.rllib.core.rl_module.rl_module import RLModuleSpec
 from ray.rllib.models import ModelCatalog
 from ray import tune
+from ray.tune import Tuner
 import ray
 
 import gymnasium as gym
@@ -34,7 +36,7 @@ num_workers = parser.parse_args().num_workers
 
 NUM_EPOCHS = 10
 
-NUM_ITERATIONS = 1
+NUM_ITERATIONS = 15
 
 VEC_MODE = gym.VectorizeMode.ASYNC
 
@@ -94,7 +96,7 @@ def create_config_from_spec(spec_name):
         .learners(num_learners = 1,
                   num_gpus_per_learner = 1)
         .training(
-            train_batch_size_per_learner=tune.choice([200,400]),
+            train_batch_size_per_learner=10000,
             minibatch_size=128,
 
             lr=tune.grid_search([1e-3,1e-4]),
@@ -117,25 +119,37 @@ for spec_name in algo_configs.keys():
 
     spec_start_time = time()
 
-    results = tune.run(
-        "PPO",
-        config=config.to_dict(),
-        storage_path = base_storage_path,
-        name = spec_name,
-        stop={'training_iteration': NUM_ITERATIONS},
-        metric="episode_reward_mean",
-        mode="max"
-    )
-    
-    best_trial = results.get_best_trial(metric="episode_reward_mean",mode="max")
-    
-    best_checkpoint = results.get_best_checkpoint(
-    trial=best_trial,
-    metric="episode_reward_mean",
-    mode="max"
-    )
+   
 
-    checkpoint_tracker[spec_name] = best_checkpoint.path
+    tuner = Tuner("PPO",
+        param_space=config.to_dict(),
+        tune_config=tune.TuneConfig(
+            metric="episode_reward_mean",
+            mode="max",
+            num_samples=10,  # Number of trials
+        ),
+        run_config=tune.RunConfig(
+            stop={"training_iteration": NUM_ITERATIONS},
+            storage_path = base_storage_path,
+            name = spec_name,
+            checkpoint_config=tune.CheckpointConfig(num_to_keep=3,
+                                                    checkpoint_score_attribute='env_runner/agent_episode_return_mean/default_agent',
+                                                    checkpoint_score_order='max')
+        )
+    )
+    
+    results = tuner.fit()
+
+    result_df = results.get_dataframe()
+    result_df.to_csv(base_storage_path / spec_name/ f'{spec_name}_results.csv')
+    
+
+    best_result = results.get_best_result(metric="env_runner/agent_episode_return_mean/default_agent",mode="max")
+    
+    br_path = best_result.path
+    br_cps = best_result.best_checkpoints
+
+    checkpoint_tracker[spec_name] = {'path': br_path, 'checkpoints': [cp.path for cp in br_cps if cp is not None]}
 
     spec_end_time = time()
 
