@@ -11,7 +11,7 @@ import numpy as np
 from ray.rllib.algorithms.ppo import PPOConfig
 from ray.rllib.core.rl_module.rl_module import RLModuleSpec
 from ray.rllib.models import ModelCatalog
-from ray import tune
+from ray.tune import Tuner
 import ray
 
 import gymnasium as gym
@@ -113,13 +113,13 @@ def create_config_from_spec(spec_name):
 
 config = create_config_from_spec('no_skip_norm')
 
-results = tune.run(
-    "PPO",
+tuner = Tuner("PPO",
     config=config.to_dict(),
     stop={"training_iteration": 2},
     storage_path = base_storage_path,
-    name = 'debug'
-)
+    name = 'debug')
+
+results = tuner.fit()
 
 
 
