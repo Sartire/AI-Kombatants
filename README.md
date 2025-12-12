@@ -27,7 +27,7 @@ Docker terminal into the container with:
 `docker compose run python_integ_tool bash`
 
 Then: 
-```
+```bash
     cd /usr/src/code 
     bash render_movie.sh [the full path to the bk2file]
 ```
@@ -38,13 +38,23 @@ Get a terminal on the container with
 `docker compose run python_integ_tool bash`
 
 Then:
+
+```bash
     cd /usr/src/code
     bash launch_integ.sh
+```
 
 Then in a VNC viewer (I used RealVNC) connect to localhost:5900
 
 For a tutorial see: https://www.youtube.com/watch?v=lPYWaUAq_dY starting at 4:20. The container already has the ROM installed in the appropriate position.
 
+
+# Apptainer
+
+To run this (on UVA's HPC) we have to use Apptainer instead of Docker as it doesn't require root access.
+
+The setup assumes you have this repository cloned as `/scratch/[your computing id]/AI-Kombatants`
+We also assume you have set up a seperate directory for the outputs as `/scratch/[your computing id]/kombat_artifacts`
 
 ## The apptainer training environment:
 
@@ -60,18 +70,21 @@ To build, first pick a nice little directory somewhere outside this repo to buil
 
 In the terminal, first `cd` to **this** directory, then
 
-`apptainer build [/your/output/path/dojo.sif] ./dojo/dojo_apptain.def`
-
+```bash
+apptainer build [/your/output/path/dojo.sif] ./dojo/dojo_apptain.def
+```
 This creates the dojo.sif file in the given location on your machine.
 
 I then upload the .sif file onto UVA's HPC filesystem into a `kombat_artifacts` folder under my user scratch directory. 
 
 ### Using the image (on the UVA HPC)
 
-In a terminal for your session:
+In a terminal for your session, from this directory
 
+```bash
+bash ./code/launch_dojo.sh
 ```
-cd /path/to/kombat_artifacts
-module load apptainer
-apptainer shell --contain dojo.sif
-```
+ASSUMING you have the folders set up under **your** `/scratch` directory,
+This will launch the container with this repo mounted to '/dojo' and your `kombat_artifacts` repo mounted to `/kombat_artifacts`
+
+Paths in the scripts are based on being run in the apptainer with these directories available. 

@@ -7,24 +7,6 @@ import numpy as np
 from itertools import product
 #from pprint import pprint
 
-'''
-MKII_obs_space = gym.spaces.Dict({
-    Columns.OBS: gym.spaces.Dict({
-        'image': gym.spaces.Box(low=0, high=255, shape=(224, 320, 3), dtype=np.uint8),
-        'health': gym.spaces.Box(low=0, high=120, shape=(1,), dtype=np.intp),
-        'x_location': gym.spaces.Box(low=0, high=2000, shape=(1,), dtype=np.intp),
-        'y_location': gym.spaces.Box(low=0, high=2000, shape=(1,), dtype=np.intp),
-        'enemy_health': gym.spaces.Box(low=0, high=120, shape=(1,), dtype=np.intp),
-        'enemy_x_location': gym.spaces.Box(low=0, high=2000, shape=(1,), dtype=np.intp),
-        'enemy_y_location': gym.spaces.Box(low=0, high=2000, shape=(1,), dtype=np.intp),
-        
-    }),
-    
-    Columns.TERMINATEDS : gym.spaces.MultiBinary(1),
-    Columns.TRUNCATEDS: gym.spaces.MultiBinary(1),
-    Columns.REWARDS: gym.spaces.Box(low=-100, high=100, shape=(1,), dtype=np.float32)
-})
-'''
 MKII_obs_space = gym.spaces.Dict({
         'image': gym.spaces.Box(low=0, high=1, shape=(224, 320, 3), dtype=np.float32),
         #'health': gym.spaces.Box(low=0, high=120, shape=(1,), dtype=np.float),
@@ -47,10 +29,15 @@ class MKII_Single_Env(gym.Env):
 
         # number of additional steps to take after each action
         self.n_skip_steps = config['n_skip_steps']
+        
         # if true, repeat the same action for n_skip_steps
         # otherwise, take a no-op action
-        self.skip_repeat = config['skip_repeat']
+        #self.skip_repeat = config['skip_repeat']
+
         self.reset_delay = config['reset_delay']
+        self.health_weights = config['health_weights']
+
+        self.prev_healths = {'p1': None, 'p2': None}
 
         #self.button_mask = [0, 1, 3, 4, 5, 6, 7, 8]
         # Set up discrete action space
@@ -73,7 +60,7 @@ class MKII_Single_Env(gym.Env):
         self.action_dict = action_dict
 
         # actually create the environment
-        self.env = retro.make(game='MortalKombatII-Genesis',
+        self.inner_env = retro.make(game='MortalKombatII-Genesis',
                               render_mode='rgb_array',
                               state = self.initial_state,
                               record = self.record_dir)
@@ -81,35 +68,26 @@ class MKII_Single_Env(gym.Env):
         self.observation_space = MKII_obs_space
         self.action_space = gym.spaces.Discrete(21)
 
-    def convert_obs(self, obs):
+    def convert_obs(self, obs, info):
         # obs is the tuple output by env.step
         new_obs = {
             # convert uint8 image to float
-            'image': obs[0].astype(np.float32) / 255.0 , 
-            'additional_data': np.array([obs[4]['health'], obs[4]['enemy_health'], obs[4]['x_position'], obs[4]['y_position'], 
-                                         obs[4]['enemy_x_position'], obs[4]['enemy_y_position']], dtype=np.float32),   
-            #'health': obs[4]['health'],
-            #'enemy_health': obs[4]['enemy_health'],
-            #'player_location': np.array([obs[4]['x_position'], obs[4]['y_position']]),
-            #'enemy_location': np.array([obs[4]['enemy_x_position'], obs[4]['enemy_y_position']]),
-            
-            
+            'image': obs.astype(np.float32) / 255.0 , 
+            'additional_data': np.array([info['health'], info['enemy_health'], info['x_position'], info['y_position'], 
+                                         info['enemy_x_position'], info['enemy_y_position']], dtype=np.float32)
         }
-
-        reward = obs[1]
-        terminated = obs[2]
-        truncated = obs[3]
-        info = obs[4]
-        return new_obs, reward, terminated, truncated, info
+        return new_obs
 
     def reset(self, seed=None, options=None):
-        self.env.reset(seed, options)
-        # take a no action step to get the first observation
+        self.inner_env.reset(seed, options)
+        # take a numer of no action step to get the first observation where we can give input
+        # determined though testing for each state
         action = np.zeros(self.action_space.n)
         for i in range(self.reset_delay):
-            obs = self.env.step(action)
+            obs, reward, terminated, truncated, info = self.inner_env.step(action)
 
-        new_obs, reward, terminated, truncated, info = self.convert_obs(obs)
+        new_obs = self.convert_obs(obs)
+        self.prev_healths = {'p1': info['health'], 'p2': info['enemy_health']}
         return new_obs, info
 
     
@@ -130,28 +108,38 @@ class MKII_Single_Env(gym.Env):
         if self.skip_repeat:
             skip_action = full_action
         else:
-            skip_action = np.zeros(self.env.action_space.n)
+            skip_action = np.zeros(self.inner_env.action_space.n)
 
-        
+        num_steps = self.n_skip_steps + 1
 
-        obs = self.env.step(full_action)
-        reward = obs[1]
-        if self.n_skip_steps > 0:
-            for _ in range(self.n_skip_steps):
-                obs = self.env.step(skip_action)
-                reward += obs[1]
+        for _ in range(num_steps):
+            obs, not_reward, terminated, truncated, info = self.inner_env.step(full_action)
+            if terminated or truncated:
+                break
+                #reward += obs[1]
 
-        final_output, not_reward, terminated, truncated, info = self.convert_obs(obs)
-        return final_output, reward, terminated, truncated, info
+        new_obs = self.convert_obs(obs)
+
+        # calculate reward
+        reward = self.health_weights[0] * (info['health'] - self.prev_healths['p1']) + self.health_weights[1] * (info['enemy_health'] - self.prev_healths['p2'])
+        # reward winning and penalizing losing
+        if info['enemy_health'] <= 0:
+            reward = info['health']**2 + 10
+        elif info['health'] <= 0:
+            reward = -info['enemy_health']**2 - 10
+
+        self.prev_healths = {'p1': info['health'], 'p2': info['enemy_health']}
+
+        return new_obs, reward, terminated, truncated, info
     
     def close(self):
-        self.env.close()
+        self.inner_env.close()
 
     def stop_record(self):
-        self.env.stop_record()
+        self.inner_env.stop_record()
 
     def render(self):
-        return self.env.render()
+        return self.inner_env.render()
     
 
 if __name__ == "__main__":

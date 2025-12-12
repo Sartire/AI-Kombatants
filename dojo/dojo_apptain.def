@@ -63,3 +63,4 @@ From: ubuntu:jammy
     python3.12 -m retro.import /usr/src/rom
 
     python3.12 -m pip install "ray[rllib,tune]"
+    python3.12 -m pip install tensorboard

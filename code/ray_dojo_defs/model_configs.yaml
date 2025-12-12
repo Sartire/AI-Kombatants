@@ -1,0 +1,19 @@
+base:
+  conv_layers_spec: 
+  - [32, 8, 4, 3]
+  - [64, 4, 2, 1]
+  - [64, 3, 2, 1]
+  - [128, 3, 2, 1]
+  hidden_dim: 256
+  embedding_dim: 256
+  conv_normalize: False
+
+with_norm:
+  conv_layers_spec: 
+  - [32, 8, 4, 3]
+  - [64, 4, 2, 1]
+  - [64, 3, 2, 1]
+  - [128, 3, 2, 1]
+  hidden_dim: 256
+  embedding_dim: 256
+  conv_normalize: True
