@@ -66,7 +66,8 @@ def create_config_from_spec(spec_name):
                          'record_dir': False,
                          'n_skip_steps': spec['n_skip_steps'],
                          'skip_repeat': True,
-                         'reset_delay': 174
+                         'reset_delay': 174,
+                         'health_weights': (-1,1)
                      })
         .rl_module(rl_module_spec=RLModuleSpec(
             module_class=Kombatant,
