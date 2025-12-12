@@ -85,15 +85,15 @@ def create_config_from_spec(spec_name):
         .learners(num_learners = 1,
                   num_gpus_per_learner = 1)
         .training(
-            train_batch_size_per_learner=tune.choice([200,400]),
+            train_batch_size_per_learner=200,
             minibatch_size=128,
 
-            lr=tune.grid_search([1e-3,1e-4]),
+            lr=1e-3,
             num_epochs=NUM_EPOCHS,
             use_critic=True,
             use_gae=True,
-            lambda_ = tune.grid_search([0.9,0.99]),
-            gamma = tune.grid_search([0.9,0.995])
+            lambda_ = 0.99,
+            gamma = 0.995
             )
         )
     return config
@@ -117,5 +117,7 @@ if trial.last_result:
     for key in sorted(trial.last_result.keys()):
         if "reward" in key.lower() or "return" in key.lower() or "episode" in key.lower():
             print(f"  {key}: {trial.last_result[key]}")
+
+pickle.dump(trial.last_result, open('/kombat_artifacts/debug_metrics.p', 'wb'))
 
 ray.shutdown()
