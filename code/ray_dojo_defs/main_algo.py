@@ -9,7 +9,7 @@ import pandas as pd
 
 from ray.rllib.algorithms.ppo import PPOConfig
 from ray.rllib.core.rl_module.rl_module import RLModuleSpec
-from ray.rllib.models import ModelCatalog
+
 from ray import tune
 from ray.tune import Tuner
 import ray
@@ -18,7 +18,7 @@ import gymnasium as gym
 from pprint import pprint
 from pathlib import Path
 import yaml
-
+import os
 from time import time
 import pickle
 
@@ -41,6 +41,7 @@ NUM_ITERATIONS = 1
 
 VEC_MODE = gym.VectorizeMode.ASYNC
 
+os.environ["TUNE_DISABLE_STRICT_METRIC_CHECKING"] = "1"
 
 ray.init(num_cpus=num_workers, num_gpus=1,
          _temp_dir='/kombat_artifacts/ray_tmp')
@@ -130,7 +131,7 @@ for spec_name in algo_configs.keys():
     tuner = Tuner("PPO",
         param_space=config.to_dict(),
         tune_config=tune.TuneConfig(
-            metric="env_runners/episode_return_mean",
+            metric="env_runners/episode_return",
             mode="max",
             num_samples=2,  # Number of trials
         ),
@@ -139,7 +140,7 @@ for spec_name in algo_configs.keys():
             storage_path = base_storage_path,
             name = spec_name,
             checkpoint_config=tune.CheckpointConfig(num_to_keep=3,
-                                                    checkpoint_score_attribute='env_runners/episode_return_mean',
+                                                    checkpoint_score_attribute='env_runners/episode_return',
                                                     checkpoint_score_order='max')
         )
     )
@@ -149,13 +150,16 @@ for spec_name in algo_configs.keys():
     result_df = results.get_dataframe()
     result_df.to_csv(base_storage_path / spec_name/ f'{spec_name}_results.csv')
     
-
-    best_result = results.get_best_result(metric="env_runners/episode_return_mean",mode="max")
+    try:
+        best_result = results.get_best_result(metric="env_runners/episode_return",mode="max")
     
-    br_path = best_result.path
-    br_cps = best_result.best_checkpoints
+        br_path = best_result.path
+        br_cps = best_result.best_checkpoints
 
-    checkpoint_tracker[spec_name] = {'path': br_path, 'checkpoints': [cp.path for cp in br_cps if cp is not None]}
+        checkpoint_tracker[spec_name] = {'path': br_path, 'checkpoints': [cp.path for cp in br_cps if cp is not None]}
+
+    except:
+        pass
 
     spec_end_time = time()
 
