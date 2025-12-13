@@ -1,7 +1,3 @@
-no_skip:
-  n_skip_steps: 0
-  which_model_config: base
-
 skip_1:
   n_skip_steps: 1
   which_model_config: base
