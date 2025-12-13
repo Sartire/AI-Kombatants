@@ -37,7 +37,7 @@ num_workers = parser.parse_args().num_workers
 
 NUM_EPOCHS = 10
 
-NUM_ITERATIONS = 1
+NUM_ITERATIONS = 15
 
 VEC_MODE = gym.VectorizeMode.ASYNC
 
@@ -140,7 +140,7 @@ for spec_name in algo_configs.keys():
         tune_config=tune.TuneConfig(
             metric="env_runners/episode_return_mean",
             mode="max",
-            num_samples=2,  # Number of trials
+            num_samples=4,  # Number of trials
         ),
         run_config=tune.RunConfig(
             stop={"training_iteration": NUM_ITERATIONS},
@@ -156,14 +156,15 @@ for spec_name in algo_configs.keys():
 
     result_df = results.get_dataframe()
     result_df.to_csv(base_storage_path / spec_name/ f'{spec_name}_results.csv')
-    
+    checkpoint_tracker[spec_name] = {'exp_path':results.experiment_path, 'best_path': None, 'best_checkpoints': []}
     try:
         best_result = results.get_best_result(metric="env_runners/episode_return_mean",mode="max")
     
         br_path = best_result.path
         br_cps = best_result.best_checkpoints
 
-        checkpoint_tracker[spec_name] = {'path': br_path, 'checkpoints': [cp.path for cp in br_cps if cp is not None]}
+        checkpoint_tracker[spec_name] = { 'exp_path':results.experiment_path, 'best_path': br_path, 'best_checkpoints': [cp.path for cp in br_cps if cp is not None]}
+        
 
     except:
         pass
@@ -171,8 +172,8 @@ for spec_name in algo_configs.keys():
     spec_end_time = time()
 
     print(f'{spec_name} took {(spec_end_time - spec_start_time)/1} seconds')
-
     print(f'{spec_name} best checkpoint: {checkpoint_tracker[spec_name]}')
+    
 
 
 # save the checkpoint tracker
