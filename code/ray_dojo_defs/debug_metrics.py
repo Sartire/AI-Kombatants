@@ -1,7 +1,7 @@
 from ray import tune
 import os
 
-os.environ["TUNE_DISABLE_STRICT_METRIC_CHECKING"] = "1"
+#os.environ["TUNE_DISABLE_STRICT_METRIC_CHECKING"] = "1"
 
 from env_class import MKII_Single_Env, MKII_obs_space
 from single_play_agent import Kombatant

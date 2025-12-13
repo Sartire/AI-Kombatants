@@ -111,8 +111,8 @@ def create_config_from_spec(spec_name):
             evaluation_interval=1,
             evaluation_num_workers = 1,
 
-            evaluation_duration = 10,
-            evaluation_duration_unit = 'episode'
+            evaluation_duration = 15,
+            evaluation_duration_unit = 'episodes'
         )
         .callbacks(callbacks_class= EpisodeReturn)
             
