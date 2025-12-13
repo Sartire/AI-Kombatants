@@ -41,7 +41,7 @@ NUM_ITERATIONS = 1
 
 VEC_MODE = gym.VectorizeMode.ASYNC
 
-os.environ["TUNE_DISABLE_STRICT_METRIC_CHECKING"] = "1"
+#os.environ["TUNE_DISABLE_STRICT_METRIC_CHECKING"] = "1"
 
 ray.init(num_cpus=num_workers, num_gpus=1,
          _temp_dir='/kombat_artifacts/ray_tmp')
@@ -107,6 +107,13 @@ def create_config_from_spec(spec_name):
             use_gae=True,
             lambda_ = 0.99,
             gamma = 0.995)
+        .evaluation(
+            evaluation_interval=1,
+            evaluation_num_workers = 1,
+
+            evaluation_duration = 10,
+            evaluation_duration_unit = 'episode'
+        )
         .callbacks(callbacks_class= EpisodeReturn)
             
         )
@@ -131,7 +138,7 @@ for spec_name in algo_configs.keys():
     tuner = Tuner("PPO",
         param_space=config.to_dict(),
         tune_config=tune.TuneConfig(
-            metric="env_runners/episode_return",
+            metric="env_runners/episode_return_mean",
             mode="max",
             num_samples=2,  # Number of trials
         ),
@@ -140,7 +147,7 @@ for spec_name in algo_configs.keys():
             storage_path = base_storage_path,
             name = spec_name,
             checkpoint_config=tune.CheckpointConfig(num_to_keep=3,
-                                                    checkpoint_score_attribute='env_runners/episode_return',
+                                                    checkpoint_score_attribute='env_runners/episode_return_mean',
                                                     checkpoint_score_order='max')
         )
     )
@@ -151,7 +158,7 @@ for spec_name in algo_configs.keys():
     result_df.to_csv(base_storage_path / spec_name/ f'{spec_name}_results.csv')
     
     try:
-        best_result = results.get_best_result(metric="env_runners/episode_return",mode="max")
+        best_result = results.get_best_result(metric="env_runners/episode_return_mean",mode="max")
     
         br_path = best_result.path
         br_cps = best_result.best_checkpoints
